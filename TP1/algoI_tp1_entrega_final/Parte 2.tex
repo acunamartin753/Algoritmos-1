@@ -1,0 +1,470 @@
+\documentclass[a4paper]{article} 
+
+\setlength{\parskip}{0.1em}
+\newcommand{\tab}{~ \qquad}
+\input{Algo1Macros}
+\usepackage{caratula} % Version modificada para usar las macros de algo1 de ~> https://github.com/bcardiff/dc-tex
+\usepackage{amsfonts} 
+\usepackage[utf8]{inputenc}
+
+\begin{document}
+
+\titulo{TP de Especificaci\'on}
+\subtitulo{An\'alisis Habitacional Argentino}
+\fecha{27 de Octubre de 2021}
+\materia{Algoritmos y Estructuras de Datos I}
+\grupo{Grupo 7}
+\newcommand{\senial}{\textit{se\~nal}}
+
+% Pongan cuantos integrantes quieran
+\integrante{Acuña, Martín}{596/21}{acunamartin1426@gmail.com}
+\integrante{Castro, Lucía}{278/21}{lucia.ines.castro.98@gmail.com}
+\integrante{Clas, Giulia}{11/15}{clas.giulia.s@gmail.com}
+\integrante{Seidler, Daniel}{973/12}{danieljseidler@gmail.com}
+
+\maketitle
+
+\section{Problemas}
+
+% ej 1
+\begin{proc}{encuestaV\'alida}{\In th: $eph_h$, \In ti: $eph_i$, \Out result: \bool}{}
+    \pre{\True}
+    \post{result =\True\Iff laEncuestaEsValida(th,ti)}
+\end{proc}
+
+% ej 2
+\begin{proc}{histHabitacional}{\In th: $eph_{h}$, \In ti: $eph_{i}$, \In region: \ent, \Out res: \TLista{\ent} }{}
+    \pre{laEncuentaEsValida(th, ti) \land laRegionEsValida(region)}
+    \post{(\forall i :\ent)(0 \leq i < \longitud{res} \implicaLuego 
+    \\res[i] = casasConNHabitaciones(th, region, i+1)) \land esMaxDeHabitaciones(\longitud{res}, th, region)}
+\end{proc}
+
+% ej 3
+\begin{proc}{laCasaEstaQuedandoChica}{\In th: $eph_h$, \In ti: $eph_i$, \Out res: $seq\langle\mathbb{R}\rangle$}{}
+    \pre{laEncuentaEsValida(th, ti)}
+    \post{(\forall i :\ent)(0 \leq i < \longitud{res} \implicaLuego \\
+    res[i] = \frac{casasConHacinamientoCriticoEnLaRegion(th, ti, i)}{hogaresEnLaRegion(th,i)}}
+\end{proc}
+
+% ej 4
+\begin{proc}{creceElTeleworkingEnCiudadesGrandes}{\In t1h: $eph_h$, \In t1i: $eph_i$, \In t2h: $eph_h$, \In t2i: $eph_i$, \Out result: \bool}{}
+    \pre{(laEncuestaEsValida(t1h, t1i) \text{ } \land  \text{ } laEncuestaEsValida(t2h, t2i)) \text{ } \land_\text{ } L (t1h[0][ord(HOGANO)] < \\
+t2h[0][ord(HOGANO)] \land_L t1h[0][ord(HOGTRIMESTRE)] = t2h[0][ord(HOGTRIMESTRE)] }
+    \post{result = \\ 
+\frac{cantidadPersonasQueHacenTeleworkingEnCiudadGrande(t1h, t1i)}{cantidadPersonasEnCiudadGrande(t1h, t1i)} <  \frac{cantidadPersonasQueHacenTeleworkingEnCiudadGrande(t2h, t2i)}{cantidadPersonasEnCiudadGrande(t2h, t2i)}}
+\end{proc}
+
+% ej 5
+\begin{proc}{costoSubsidioMejora}{\In th: $eph_{h}$, \In ti: $eph_{i}$, \In monto: \ent, \Out res: \ent }{}
+    \pre{laEncuentaEsValida(th, ti) \land monto > 0}
+    \post{res = monto * hogaresCandidatosASubsidio(th,ti)}
+\end{proc}
+
+% ej 6
+\begin{proc}{generarJoin}{\In th: $eph_{h}$,\In ti: $eph_{i}$, \Inout junta: $joinHI$}{}
+    \pre{laEncuestaEsValida(th,ti)}
+    \post{(\forall i:\ent)(0\leq i<filas(junta)\implicaLuego es2-upla(junta[i]))\land \\  hayCorrespondenciaEntreJoinyTabla(ti, junta, ord(INDCODUSU), 1) \land \\ hayCorrespondenciaEntreJoinyTabla(th, junta, ord(HOGCODUSU), 0)   }
+\end{proc}
+
+% ej  7
+\begin{proc}{ordenarRegionYTipo}{\Inout th: $eph_{h}$, \Inout ti: $eph_{i}$}{}
+    \pre{laEncuentaEsValida(th, ti) \land th = th_{0} \land ti = ti_{0}}
+    \post{mismoTamanioDeTabla(th, th_{0}) \land mismoTamanioDeTabla(ti, ti_{0}) \land \\ 
+    	th \subseteq th_{0} \land ti \subseteq ti_{0} \land ordenadoPorRegion(th) \land \\ regionesOrdenadasPorHogcodusu(th) \land mismoOrdenDeCodusu(th, ti) \land casasOrdenadasPorComponente(ti)}
+\end{proc}
+
+% ej 8
+\begin{proc}{muestraHomogenea}
+{\In th: $eph_{h}$, \In ti: $eph_{i}$ \Out res: \TLista{hogar} }{}
+    \pre{laEncuentaEsValida(th, ti)}
+    \post{(\,estaOrdenadaPorIngresos(ti, res) \\ \land                         
+    	   diferenciaDeIngresosConstante(ti,res) \\ \land
+           \longitud{res} \geq 3 \\ \land
+            esLaSecuenciaMasGrande(th, ti, res) ) \\ \lor
+            \longitud{res} = 0
+    }
+\end{proc}
+
+% ej 9
+\begin{proc}{corregirRegion}{\Inout th: $eph_h$, \In ti: $eph_i$}{}
+    \pre{laEncuentaEsValida(th, ti) \land th_0=th}
+    \post{\longitud{th_0}=\longitud{th} \land cantColumnasHogares(th_0)=cantColumnasHogares(th) \land (\forall i :\ent)(\forall col :\ent)\\
+        (0 \leq i < \longitud{th} \land col \neq ord(REGION) \implicaLuego th_0[i][col]=th[i][col]) \land\\
+	(0 \leq i < \longitud{th} \land th_0[i][ord(REGION)] = 1 \implicaLuego th[i][ord(REGION)]=5) \land \\
+	(0 \leq i < \longitud{th} \land th_0[i][ord(REGION)] \neq 1 \implicaLuego th_0[i][ord(REGION)]=th[i][ord(REGION)])}
+\end{proc}
+
+% ej 10
+\begin{proc}{histoGramaDeAnillosConcentricos}
+{\In th: $eph_{h}$, \In centro: \ent x\ent, \In distancias: \TLista{\ent} \Out result: \TLista{\ent} }{}
+    \pre{esListaOrdenadaCreciente(distancias) \\ \land
+        \longitud{distancias}>0 \\ \land
+         noTieneValoresNulosNiNegativos(distancias)}
+    \post{ |res|=|distancias| \\
+    	\land res[0]=cantidadDeHogaresEntreDosDistancias(th, centro, 0, distancias[0]) \,\\
+	\land (\forall i:\ent)(1 \leq i < \longitud{res} \implicaLuego \\
+        res[i]=cantidadDeHogaresEntreDosDistancias(th, centro, distancias[i-1], distancias[i]) \\
+    }
+\end{proc}
+
+% ej 11
+\begin{proc}{quitarIndividuos}{\Inout th: $eph_h$, \Inout ti: $eph_i$, \In busqueda: seq$\langle(ItemIndividuo, dato)\rangle$, \Out result: ($eph_h,eph_i$)}{}
+    \pre{laEncuentaEsValida(th, ti) \land th_0=th \land ti_0=ti \land busquedaValida(busqueda)}
+    \post{result_0 \subseteq th_0 \land result_1 \subseteq ti_0 \land interseccionVacia(result_0, th) \land interseccionVacia(result, ti) \land \\
+    (\forall i: \ent) (0 \leq i < |result_1| \implicaLuego cumpleBusqueda(result[i], busqueda) \land \\
+    (\forall i: \ent) (0 \leq i < |ti| \implicaLuego \neg cumpleBusqueda(ti[i], busqueda) \land \\
+    (\forall i: \ent) (0 \leq i < |result_1| \implicaLuego contieneHogarDeIndividuo(result[i], result_0) \land \\
+    \neg contieneHogarDeIndividuo(result[i], th)\\
+   (\forall i: \ent) (0 \leq i < |result_1| \implicaLuego contieneHogarDeIndividuo(ti[i], th) \land \neg contieneHogarDeIndividuo(ti[i], result_0) \\
+}
+\end{proc}
+
+
+\section{Predicados y Auxiliares generales}
+Al comienzo hay algunos predicados genéricos. En adelante, se separaron los predicados y auxiliares en orden en que fueron apareciendo, pero se reutilizan algunos en ejercicios posteriores.
+
+% Generales
+\subsection{Predicados generales}
+\subparagraph{}
+\pred{pertenece}{elem: T, s: seq $\langle T \rangle$}{\\\indent\indent\indent
+	(\exists i : \ent)(0 \leq i < |s| \land_L elem=s[i]) \\\indent\indent
+}
+
+\subparagraph{}
+\pred{estaContenido}{$t: seq\langle seq \langle dato \rangle \rangle$, $t_{0}: seq \langle seq \langle dato \rangle \rangle$}{\\ \indent\indent\indent
+	(\forall i :\ent)(0 \leq i < filas(t) \implicaLuego ((\exists j :\ent)(0 \leq j < filas(t_{0}) \land_L (t[i]=t_{0}[j]))) \\ \indent\indent
+}
+
+
+% ej 1
+\subsection{Ejercicio 1}
+\subparagraph{}
+\pred{laEncuestaEsValida}{th: $eph_{h}$, ti: $eph_{i}$}{\\ \indent\indent\indent
+	esMatriz(th)\,\wedge\,esMatriz(ti)\,\wedge\,esTablaNoVacia(th)\,\wedge\,esTablaNoVacia(ti)\,\wedge\\\indent\indent\indent cantColumnasHogaress(th)\,\wedge\,
+	cantColumnasIndividuos(ti)\,\wedge\\\indent\indent\indent aCadaHogarLeCorrespondeUnIndividuo(th, ti)\,\wedge\,aCadaIndividuoLeCorrespondeUnHogar(th, ti)\,\wedge\\\indent\indent\indent noHayRepetidos(th, ord(HOGCODUSU))\,\wedge\,noHayRepetidos(ti, ord(INDCODUSU))\,\wedge\\\indent\indent\indent latitudLongitudValidas(th)\,\wedge\,anioTrimestreTabla(th,ord(HOGANO),ord(HOGTRIMESTRE))\,\wedge\\\indent\indent\indent anioTrimestreTabla(tI,ord(INDANO),ord(INDTRIMESTRE))\,\wedge\,cantMiembrosHogarMenorOIgual20(th, ti)\,\wedge\,
+	\indent\indent\indent atributoIV2MayoroIgualII2(th)\,\wedge\,atributosHogarRangoEsperado(th)\,\wedge\, atributosIndividuoRangoEsperado(ti) 
+\\\indent\indent }
+
+\subparagraph{}
+\pred{esMatriz}{m: \matriz {dato}}{\\\indent\indent\indent (\forall i:\ent)(0\leq i<filas(m)\implicaLuego |m(i)|>0\,\wedge\,(\forall j:\ent)(0\leq j<filas(m)\implicaLuego |m(i)|=|m(j)|)) \\\indent\indent }
+
+\subparagraph{}
+\aux{filas}{m: \matriz {dato}}{\ent}{|m| }
+
+\subparagraph{}
+\aux{columnas}{m: \matriz {dato}}{\ent}{\IfThenElse {filas(m) > 0}{|m(0)|}{0} }
+
+\subparagraph{}
+\pred{esTablaNoVacia}{m: \matriz {dato}}{\\\indent\indent\indent |m|\neq 0 \\\indent\indent }
+
+\subparagraph{}
+\pred{cantColumnasHogares}{m: $eph_{h}$}{\\\indent\indent\indent def(ItemHogar(columnas(m)-1)) \wedge \neg def(ItemHogar(columnas(m)))
+\\\indent\indent }
+
+\subparagraph{}
+\pred{cantColumnasIndividuos}{z: $eph_{i}$}{\\\indent\indent\indent def(ItemIndividuo(columnas(z)-1)) \wedge \neg def(ItemIndividuo(columnas(z)))
+\\\indent\indent }
+
+\subparagraph{}
+\pred{aCadaHogarLeCorrespondeUnIndividuo}{m: $eph_{h}$, z: $eph_{i}$}{\\\indent\indent\indent (\forall i:\ent)(0\leq i<filas(m)\implicaLuego (\exists j:\ent)(0\leq j<filas(z)\,\yLuego\, z[j][ord(INDCODUSU)] = m[i][ord(HOGCODUSU)])\\\indent\indent}
+
+\subparagraph{}
+\pred{aCadaIndividuoLeCorrespondeUnHogar}{m: $eph_{h}$, z: $eph_{i}$}{\\\indent\indent\indent (\forall j:\ent)(0\leq j<filas(z)\implicaLuego (\exists i:\ent)(0\leq i<filas(m)\,\yLuego\, z[j][ord(INDCODUSU)] = m[i][ord(HOGCODUSU)])\\\indent\indent}
+
+\subparagraph{}
+\pred{noHayRepetidos}{m: \matriz {dato}, l:\ent}{\\\indent\indent\indent (\forall i:\ent)(0\leq i<filas(m)\implicaLuego (\forall j:\ent)((0\leq j<filas(m)\,\wedge\,j\neq i)\implicaLuego m[i][l]\neq m[j][l])
+\\\indent\indent }
+
+\subparagraph{}
+\pred{latitudLongitudValidas}{m: $eph_{h}$}{\\\indent\indent\indent (\forall i:\ent)(0\leq i<filas(m)\implicaLuego (-55\leq m[i][ord(HOGLATITUD)]\leq-22))\,\wedge\\\indent\indent\indent(\forall j:\ent)(0\leq i<filas(m)\implicaLuego(-74\leq m[J][ord(HOGLONGITUD)]\leq-53))  
+\\\indent\indent }
+%Fuente consultada para las coordenadas: https://www.ecured.cu/Anexo:Regiones_geogr%C3%A1ficas_de_Argentina#:~:text=Las%20regiones%20son%20ocho%3A%20la,Patagonia%20y%20las%20Tierras%20Australes.
+
+\subparagraph{}
+\aux{anoEncuesta}{m: $eph_{h}$}{\ent}{m[0][ord(HOGANO] }
+
+\subparagraph{}
+\aux{trimestreEncuesta}{m: $eph_{h}$}{\ent}{m[0][ord(HOGTRIMESTRE)] }
+
+\subparagraph{}
+\pred{anioTrimestreTabla}{m: \matriz {dato}, l,r:\,\ent}{\\\indent\indent\indent (\forall i:\ent)(0\leq i<filas(m)\implicaLuego m[i][l] = anoEncuesta\,\wedge\, m[i][r] = trimestreEncuesta) 
+\\\indent\indent }
+
+\subparagraph{}
+\pred{cantMiembrosHogarMenorOIgual20}{m: $eph_{h}$, z: $eph_{i}$}{\\\indent\indent\indent (\forall i:\ent)(0\leq i<filas(m)\implicaLuego (\sum_{j=0}^{filas(z)-1}{\IfThenElse {hayCorrespondenciaHogarIndividuo (i,j,m,z)}{1}{0} \leq 20)) } \\\indent\indent }
+
+\subparagraph{}
+\pred{atributoIV2MayoroIgualII2}{m: $eph_{h}$}{\\\indent\indent\indent (\forall i:\ent)(0\leq i<filas(m)\implicaLuego m[i][ord(IV2)]\geq m[I][ord(II2)])\\\indent\indent }
+
+\subparagraph{}
+\pred{atributosHogarRangoEsperado}{m: $eph_{h}$}{\\\indent\indent\indent (\forall i:\ent)(0\leq i<filas(m)\implicaLuego ((0<m[i][ord(HOGCODUSU)])\,\wedge\,(0<m[i][ord(HOGANO)])\,\wedge\\\indent\indent\indent(0<m[i][ord(HOGTRIMESTRE)])\,\wedge\,(1\leq m[i][ord(II7)]\leq 3)\,\wedge\,(1\leq m[i][ord(REGION)]\leq 10)\,\wedge\\\indent\indent\indent(0\leq m[i][ord(MAS\_500)]\leq 1)\,\wedge\,(1\leq m[i][ord(IV1)]\leq 5)\,\wedge\,(1\leq m[i][ord(II3)]\leq 3)\,\wedge\,(0\leq m[i][ord(IV2)]))\,\wedge\,\indent\indent\indent(0\leq m[i][ord(II2)]))\\\indent\indent }
+
+\subparagraph{}
+\pred{atributosIndividuoRangoEsperado}{z: $eph_{i}$}{\\\indent\indent\indent (\forall i:\ent)(0\leq i<filas(m)\implicaLuego ((0<z[i][ord(INDCODUSU)])\,\wedge\,(0<z[i][ord(INDANO)])\,\wedge\\\indent\indent\indent(0<z[i][ord(INDTRIMESTRE)])\,\wedge\,(0<z[i][ord(COMPONENTE)])\,\wedge\,(0\leq z[i][ord(CH6)])\,\wedge\\\indent\indent\indent(-1\leq z[i][ord(P47T)])\,\wedge\,(1\leq z[i][ord(CH4)]\leq 2)\,\wedge\,(0\leq z[i][ord(NIVEL_ED)]\leq 1)\,\wedge\\\indent\indent\indent(-1\leq Z[i][ord(ESTADO)]\leq 1)\,\wedge\,(0\leq z[i][ord(CAT_OCUP)]\leq 4)\,\wedge\,(1\leq z[i][ord(PP04G)]\leq 10)))\\\indent\indent }
+
+% ej 2
+\subsection{Ejercicio 2}
+\subparagraph{}
+\aux{casasConNHabitaciones}{th: $eph_{h}$, region: \ent, n: \ent}{\ent}{\\ \indent\indent\indent
+	\sum_{i=0}^{\longitud{th}-1} if \ (th[i][ord(region)]=region) \land esCasa(th[i]) \land (th[i][ord(IV2)]=n) \ then \ 1 \ else \ 0 \ fi
+}
+
+\subparagraph{}
+\pred{laRegionEsValida}{region: \ent}{\\ \indent\indent\indent
+	0 < region \leq 6 \\ \indent\indent
+}
+
+\subparagraph{}
+\pred{esMaxDeHabitaciones}{th: $eph_{h}$, region: \ent, n: \ent}{\\ \indent\indent\indent
+	(\forall i :\ent)((0 \leq i < filas(th) \land th[i][ord(REGION)]=region) \implicaLuego th[i][ord(IV2)] \leq n) \\ \indent\indent
+}   
+
+% ej 3
+\subsection{Ejercicio 3}
+\subparagraph{}
+\aux{casasConHacinamientoCriticoEnLaRegion}{th: $eph_{h}$, ti: $eph_{i}$, i: \ent}{\ent}{\\ \sum_{j=0}^{\longitud{th}-1} if \ (th[j][ord(REGION)]=i) \land (esCasaConHacinamientoCritico(th, ti, j) \ then \ 1 \ else \ 0 \ fi}
+
+\subparagraph{}
+\pred{esCasaConHacinamientoCritico}{th: $eph_{h}$, ti: $eph_{i}$, i: \ent}{ \\
+\indent\indent\indent esCasa(th[i]) \land hogarEnCiudadGrande(th[i])  \land esHogarConHacinamientoCritico(th, ti, i) \\
+\indent\indent}
+
+\subparagraph{}
+\pred{esCasa}{h: hogar}{ \\
+\indent\indent\indent h[ord(IV1)]=1 \\ 
+\indent\indent}
+
+\subparagraph{}
+\pred{hogarEnCiudadGrande}{h: hogar}{ \\ 
+	\indent\indent\indent h[ord(MAS\_500)] = 1 \\ 
+\indent\indent}
+
+
+\subparagraph{}
+\pred{esHogarConHacinamientoCritico}{th: $eph_{h}$, ti: $eph_{i}$, i: \ent}{ \\
+\indent\indent\indent \frac{miembrosDelHogar(ti,th[i][ord(CODUSU)]}{cantidadDeHabitaciones(th[i])}>3 \\ 
+\indent\indent}
+
+\subparagraph{}
+\aux{miembrosDelHogar}{ti: $eph_{i}$, codusu: dato }{\ent}{\\ \sum_{j=0}^{\longitud{ti}-1} if \ ti[j][ord(CODUSU)]=codusu \ then \ 1 \ else \ 0 \ fi}
+
+\subparagraph{}
+\aux{cantidadDeHabitaciones}{h: hogar}{\ent}{\\ h[ord(IV2)]}
+
+\subparagraph{}
+\aux{hogaresEnLaRegion}{th: $eph_{h}$, i: \ent}{\ent}{\\ \sum_{j=0}^{\longitud{th}-1} if \ th[j][ord(REGION)]=i \ then \ 1 \ else \ 0 \ fi}
+
+% ej 4
+\subsection{Ejercicio 4}
+
+\subparagraph{}
+\pred{esCasaODepartamento}{h: hogar}{\\ 
+\indent\indent\indent h[ord(IV1)] = 1 \lor h[ord(IV1)] = 2 \\
+\indent\indent}
+
+\subparagraph{}
+\pred{haceTeleworking}{h: hogar, i: individuo}{\\ 
+\indent\indent\indent h[ord(II3)] = 1 \land i[ord(PP04G)] = 6\\
+\indent\indent}
+
+\subparagraph{}
+\aux{cantidadPersonasEnHogarEnCiudadGrande}{h: hogar, ti: $eph_i$}{\ent}{\\ 
+\indent\indent\indent \sum_{i=0}^{|ti|-1} if \text{ hogarEnCiudadGrande(h) } \land \text{ h[ord(HOGCODUSU)] = ti[i][ord(INDCODUSU)] then 1 else 0 fi}
+\indent\indent}
+
+\subparagraph{}
+\aux{cantidadPersonasQueHacenTeleworkingEnHogarEnCiudadGrande}{h: hogar, ti: $eph_i$}{\ent}{\\ \indent\indent\indent 
+	\sum_{i=0}^{|ti|-1} \text{if
+	 hogarEnCiudadGrande(h) } \land \text{ h[ord(HOGCODUSU)] = ti[i][ord(INDCODUSU)]} \land_L \text{ haceTeleworking(h, ti[i]) } \land_L \text{ esCasaODepartamento(h) then 1 else 0 fi}
+}
+
+\subparagraph{}
+\aux{cantidadPersonasEnCiudadGrande}{th: $eph_h$, ti: $eph_i$}{\ent}{\\ \indent\indent\indent 
+	\sum_{i=0}^{|th|-1}
+	\text{cantidadPersonasEnHogarEnCiudadGrande(th[i], ti) }
+}
+
+\subparagraph{}
+\aux{cantidadPersonasQueHacenTeleworkingEnCiudadGrande}{th: $eph_h$, ti: $eph_i$}{\ent}{\\ \indent\indent\indent 
+	\sum_{i=0}^{|th|-1 } \text{cantidadPersonasQueHacenTeleworkingEnHogarEnCiudadGrande(th[i], ti) }
+}
+
+% ej 5
+\subsection{Ejercicio 5}
+\subparagraph{}
+\pred{tenenciaPropia}{h: hogar}{ \\
+\indent\indent\indent h[ord(II7)]=1 \\ 
+\indent\indent}
+
+\subparagraph{}
+\aux{habitacionesParaDormir}{h: hogar}{\ent}{\\ \indent\indent\indent 
+	h[ord(II2)]
+}
+
+\subparagraph{}
+\aux{hogaresCandidatosASubsidio}{\In th: $eph_{h}$, \In ti: $eph_{i}$}{\ent}{\\ \indent\indent\indent
+	\sum_{i=0}^{\longitud{th}-1} if \ esCasa(th[i]) \wedge tenenciaPropia(th[i]) \land (habitacionesParaDormir(th[i]) < \\ (miembrosDelHogar(ti,th[i][ord(HOGCODUSU)]) - 2)) \ then \ 1 \ else \ 0 \ fi}
+
+
+
+% ej 6
+\subsection{Ejercicio 6}
+\subparagraph{}
+\pred{es2-upla}{tupla: $hogar\,\times \,individuo$}{\\ \indent\indent\indent
+	(tupla)_{0}[ord(HOGCODUSU)] = (tupla)_{1}[ord(INDCODUSU)]\,\wedge\, \neg def((tupla)_{2}) \\ \indent\indent
+}
+
+\subparagraph{}
+\pred{hayCorrespondenciaEntreJoinyTabla}{m: \matriz {dato}, z: $joinHI$, k, n: \ent}{\\\indent\indent\indent (\forall i:\ent)(0\leq i<filas(m)\implicaLuego (\exists j:\ent)(0\leq j<filas(z)\,\yLuego, m[i][k] = (z[j])_{n}[k]) \wedge\\\indent\indent\indent (\forall j:\ent)(0\leq j<filas(z)\implicaLuego (\exists j:\ent)(0\leq j<filas(m)\,\yLuego\, m[i][k] = (z[j])_{n}[k]) 
+\\\indent\indent}
+
+% ej 7
+\subsection{Ejercicio 7}
+\subparagraph{}
+\pred{ordenadoPorRegion}{th: $eph_{h}$}{\\ \indent\indent\indent
+	(\forall i :\ent)(0 \leq i < filas(th)-1 \implicaLuego (th[i][ord(REGION)] \leq th[i+1][ord(REGION)])) \\ \indent\indent
+}
+
+\subparagraph{}
+\pred{regionesOrdenadasPorHogcodusu}{th: $eph_{h}$}{\\ \indent\indent\indent
+	(\forall i :\ent)((0 \leq i < filas(th)-1 \,\land \, th[i][ord(REGION)] = th[i+1][ord(REGION)]) \implicaLuego (th[i][ord(HOGCODUSU)] \leq \indent\indent\indent
+	th[i+1][ord(HOGCODUSU)]) \\ \indent\indent
+}
+
+\subparagraph{}
+\aux{posicionHogarCorrespondiente}{th: $eph_{h}$, a: \ent}{\ent}{\\\indent\indent\indent \sum_{i=0}^{\longitud{th}-1}{(\IfThenElse {th[i][ord(HOGCODUSU)] = a} {i}{0})}}
+
+\subparagraph{}
+\pred{mismoOrdenDeCodusu}{th: $eph_{h}$, ti: $eph_{i}$}{\\ \indent\indent\indent
+	(\forall i :\ent)(0 \leq i < filas(ti)-1 \implicaLuego \neg((ti[i][ord(INDCODUSU)] = ti[i+1][ord(INDCODUSU)]) \, \Iff\\ \indent\indent\indent (th[posicionHogarCorrespondiente(th, ti[i][ord(INDCODUSU)])] = \\ \indent\indent\indent th[posicionHogarCorrespondiente(th, ti[i+1][ord(INDCODUSU)])-1]))  \\ \indent\indent
+}
+
+\subparagraph{}
+\pred{casasOrdenadasPorComponente}{ti: $eph_{i}$}{\\ \indent\indent\indent
+	(\forall i :\ent)((0 \leq i < filas(ti)-1 \land ti[i][ord(INDCODUSU)] = ti[i+1][ord(INDCODUSU)]) \implicaLuego \\  \indent\indent\indent
+	(ti[i][ord(COMPONENTE)] \leq ti[i+1][ord(COMPONENTE)]) \\ \indent\indent
+}
+
+\subparagraph{}
+\pred{mismoTamanioDeTabla}{$t: seq\langle seq\langle dato \rangle \rangle$, $t_{0}: seq \langle seq\langle dato \rangle \rangle$}{\\ \indent\indent\indent
+filas(t) = filas(t_{0}) \land columnas(t) = columnas(t_{0}) \\ \indent\indent
+}
+
+% ej 8
+\subsection{Ejercicio 8}
+\subparagraph{}
+\pred{estaOrdenadaPorIngresos}
+	{\In ti: $eph_{i}$ \In res: \TLista{hogar} }{ \\\indent\indent\indent 
+	(\forall i:\ent)(0 \leq i < \longitud{res}-1 \implicaLuego
+	\\\indent\indent\indent
+	cantidadDeIngresos(ti, res[i][ord(HOGCODUSU)] \leq 
+	cantidadDeIngresos(ti, res[i+1][ord(HOGCODUSU)]\\
+\indent\indent}
+
+\subparagraph{}
+\aux{cantidadDeIngresos}
+	{\In ti: $eph_{i}$, \In codusu : \ent}{\ent}{\\\indent\indent\indent
+	\sum_{i=0}^{\longitud{ti}-1} if \, ti[i][ord(INDCODUSU)] = codusu \wedge (t[i][ord(P47T)] \neq -1 \, then \, ti[i][ord(P47T)] \, else \, 0 \, fi 
+}
+
+\subparagraph{}
+\pred{diferenciaDeIngresosConstante}
+	{\In ti: $eph_{i}$ \In res: \TLista{hogar}}{\\\indent\indent\indent
+	(\forall i:\ent)(0 \leq i < \longitud{res}-2 \implicaLuego 
+	\\\indent\indent\indent
+	cantidadDeIngresos(ti, res[i+1][ord(HOGCODUSU)] - cantidadDeIngresos(ti, res[i][ord(HOGCODUSU)]= 
+	\\\indent\indent\indent
+	 cantidadDeIngresos(ti, res[i+2][ord(HOGCODUSU)] - cantidadDeIngresos(ti, res[i+1][ord(HOGCODUSU)] \\
+\indent\indent}
+
+\subparagraph{}
+\pred{esLaSecuenciaMasGrande}
+	{\In th: $eph_{h}$, \In ti: $eph_{i}$, \In res: \TLista{hogar} }
+	{\\\indent\indent\indent
+	(\forall s: \TLista{hogar}) ((s \subseteq th) \wedge estaOrdenadaPorIngresos(ti, s) 
+	\\\indent\indent\indent
+	\wedge diferenciaDeIngresosConstante(ti, s)) \Then 
+	\longitud{s} \leq \longitud{res}\\
+}
+
+% ej 9
+\subsection{Ejercicio 9}
+\subparagraph{}
+No se utilizaron predicados auxiliares
+
+% ej 10
+\subsection{Ejercicio 10}
+\subparagraph{}
+\aux{cantidadDeHogaresEntreDosDistancias \\\indent\indent\indent}
+{\In th: $eph_{h}$, \In centro : \ent x\ent, \In limiteInferior : \ent, \In limiteSuperior: \ent}
+{\ent}
+{\\\indent\indent\indent
+	\sum_{i=0}^{\longitud{th}-1} if \,( limiteInferior \leq
+	\\\indent\indent\indent\indent\indent\indent
+	distanciaEuclidiana(th[i][ord(HOGLATITUD)], th[i][ord(HOGLONGITUD), centro_0, centro_1) <
+	\\\indent\indent\indent\indent\indent\indent
+	limiteSuperior) \, then \, 1 \, else \, 0 \, fi
+}
+
+\subparagraph{}
+\aux{distanciaEuclidiana}{\In C1Lat: \ent, \In C1Long: \ent, \In C2Lat: \ent, \In C2Long: \ent}{\ent}{\\\indent\indent\indent
+	\sqrt{(C1Lat-C2Lat)^{2}+(C1Long-C2Long)^{2}}
+}
+
+
+\subparagraph{}
+\pred{esListaOrdenadaCreciente}{\In distancias: \TLista{\ent} }{\\\indent\indent\indent
+	(\forall i:\ent)(0 \leq i < \longitud{distancias}-1 \implicaLuego  
+	distancias[i] \leq distancias[i+1]\\
+\indent\indent}
+
+\subparagraph{}
+\pred{noTieneValoresNulosNiNegativos}{\In distancias: \TLista{\ent} }{\\\indent\indent\indent
+	(\forall i:\ent)(0 \leq i < \longitud{distancias} \implicaLuego  
+	distancias[i] > 0\\
+\indent\indent}
+
+% ej 11
+\subsection{Ejercicio 11}
+
+\subparagraph{}
+\pred {busquedaValida}{busqueda: seq$\langle (ItemIndividuo, dato) \rangle$}{\\\indent\indent\indent
+	(\forall i : \ent)(0 \leq i < |busqueda| \implicaLuego atributoIndividuoEnRangoEsperado(busqueda[i]_0, busqueda[i]_1))\\\indent\indent
+}
+
+\subparagraph{}
+\pred{interseccionVacia}{s: T, q: seq$\langle T \rangle$}{\\\indent\indent\indent
+	(\forall i: \ent)(0 \leq i < |s| \implicaLuego ((\forall j: \ent)(0 \leq j < |q|) \implicaLuego s[i] \neq q[j]))\\\indent\indent
+}
+
+\subparagraph{}
+\pred{cumpleBusqueda}{ind: individuo, busqueda seq$\langle(ItemIndividuo, dato)\rangle$}{\\\indent\indent\indent
+	(\forall i: \ent)(0 \leq i < |busqueda| \implicaLuego ind[busqueda[i]_0] = busqueda[i]_1)\\\indent\indent
+}
+
+\subparagraph{}
+\pred{contieneHogarDeIndividuo}{ind: individuo, th: seq$\langle hogar \rangle$}{\\\indent\indent\indent
+	(\exists i: \ent)(0 \leq i < |th| \land_L ind[ord(INDCODUSU)]) = th[i][ord(HOGCODUSU)]\\\indent\indent
+}
+
+
+
+\section{Decisiones tomadas}
+
+\subsection{Generales}
+Se reemplaza el uso de los predicados `pertenece` y `estaContenido` por sus equivalentes matematicos $\in$ y $\subseteq$.
+Ambos predicados fueron agregados  en la sección de predicados, bajo el título de "Predicados Generales" (sección 2.1).
+
+\subsection{Ejercicio 1}
+Para las coordenadas se decidió utilizar la convención de que la latitud se mide entre -90° y 90°, mientras que la longitud va desde -180° a 180°.
+
+
+\subsection{Ejercicio 4}
+En este ejercicio se decidió que en el numerador, se pondría exclusivamente la cantidad de personas que viven en casa o departamento, que trabajan desde su casa y que a la vez tienen un ambiente dedicado para el trabajo, además de vivir en una gran ciudad, mientras que en el denominador, solo se consideran los individuos en hogares en una gran ciudad.
+
+\subsection{Ejercicio 10}
+Se agregó el chequeo de que las distancias contempladas no sean negativas, ya que no tendría sentido hablar de distancias negativas.
+
+Al considerar las distancias, en cada iteración, se decidió incluir el limite inferior, pero no el superior, dejando afuera las casas que puedan estar a distancia distancias(|distancias| - 1) del centro.
+
+\end{document}
